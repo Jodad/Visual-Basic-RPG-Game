@@ -1,0 +1,444 @@
+Module Module1
+    Dim Choiceofgame As String = Nothing
+ 'Player Parameters
+    '===========================
+    Dim NameofPlayer1 As String = Nothing
+    'Players name
+    Dim Classes As Integer = Nothing
+    'Player's Class
+    Dim Classname As String = Nothing
+    'Name of Class
+    Dim Hp As Double = Nothing
+    'Hit points
+    Dim MaxHp As Double = Nothing
+    'Upper HP limit
+    Dim ATK As Integer = Nothing
+    'Attack Damage
+    Dim Defense As Integer = Nothing
+    'Defense
+    Dim Speed As Integer = Nothing
+    'Attack Speed
+    Dim Level As Integer = Nothing
+    'Current Level
+    Dim Status As Integer = Nothing
+    'States the players current status
+    Dim Money As Double = Nothing
+
+
+    '===============================
+    'NPC Parameters'
+    Dim ClassnameNPC
+    'NPC class if a boss or warrior
+    Dim HpNPC As Double = Nothing
+    Dim ATKNPC As Integer = Nothing
+    Dim DefenseNPC As Integer = Nothing
+    Dim SpeedNPC As Integer = Nothing
+    Dim LevelNPC As Integer = Nothing
+    'Game function values
+    Dim Classconfirmpath As Double = Nothing
+    Dim Opningstatement As String = Nothing
+    Dim setting As String = Nothing
+    'Tells what turn it is.
+    Dim Turncount As Integer = Nothing
+
+    Dim Pathbeginning As Integer = Nothing
+    '=================================
+    Sub Main()
+        Dim openspace As String = "                                "
+        'openspace &
+        Console.Title() = "V.Basic Fight"
+        Console.WriteLine(openspace & "======================")
+        Console.WriteLine(openspace & "Welcome to Basic Fight!")
+        Console.WriteLine(openspace & "======================")
+        Threading.Thread.Sleep(600)
+        Console.WriteLine()
+        Console.WriteLine(" Would You like to play PC vs Player or, Player vs Player?")
+        Console.WriteLine("(P1) (P2)")
+        Choiceofgame = Console.ReadLine()
+        Select Case Choiceofgame
+            Case "P1"
+                P1()
+            Case "P2"
+                P2()
+            Case Else
+                Console.WriteLine("Defaulting to P1")
+                P1()
+        End Select
+
+    End Sub
+    
+    'Main Functions of Player 1
+    '==========================================================================
+
+    'Determines an NPC's Level
+    Function NPClevel(ByVal assignedNPClevel As Double) As Double
+        If Level = 1 Then
+            assignedNPClevel = 0
+        ElseIf Level > 1 Then
+            assignedNPClevel = 1
+        ElseIf Level >= 10 Then
+            assignedNPClevel = 2
+        ElseIf Level >= 25 Then
+            assignedNPClevel = 3
+        End If
+        NPClevel = Level + assignedNPClevel
+        Exit Function
+    End Function
+
+
+
+
+    'This determines damage for NPC's
+    Function ATKNPCresult() As Double
+        ATKNPCresult = (ATKNPC + (1.1 * LevelNPC + (0.05 * HpNPC)) - (0.9 * Defense))
+        Exit Function
+    End Function
+    Function HpNPCresult() As Double
+        'Determines health for enemy
+        HpNPCresult = HpNPC + (1 * LevelNPC)
+        Exit Function
+    End Function
+    Function SpeedNPCresult() As Double
+        'Determine's speed
+        SpeedNPCresult = SpeedNPC + (0.2 * LevelNPC)
+        Exit Function
+    End Function
+
+
+    'Battles will behandled via a looping sub with many functions'
+    'Inefficent but who gives a damn! (For now)
+
+    Public Sub Battleloop()
+        'This first area determines how strong the enemy is.
+        Debug.WriteLine("")
+        Debug.WriteLine("===============")
+        Debug.WriteLine("Battle Start!")
+
+
+        Dim randommonster As String = Nothing
+        'Monster randomizer
+        Dim monsterstatement As String = Nothing
+        ' Attack statement
+        Console.WriteLine(" Do you want to fight a Zombie or Skeleton? (1 or 2)")
+        randommonster = Console.ReadLine()
+        'Monsters
+        If randommonster = 1 Then
+            'Zombie
+            randommonster = "Zombie"
+            monsterstatement = " The Zombie strikes you and inflicts "
+            HpNPC = 25
+            SpeedNPC = 2
+            ATKNPC = 2
+            LevelNPC = NPClevel(Level)
+            'Uses "Function NPClevel(ByVal assignedNPClevel As Double) As Double"
+            'Level Function() to determine the NPC's Level, Established using player level as base + Extra
+            HpNPC = HpNPCresult()
+            SpeedNPC = SpeedNPCresult()
+            'Need to make random monster function so temp as 'Zombie'
+        ElseIf randommonster = 2 Then
+            'Skeleton
+            randommonster = "Skeleton"
+            monsterstatement = " The Skeleton shoots an arrow and inflicts "
+            HpNPC = 28
+            SpeedNPC = 2.2
+            ATKNPC = 2
+            LevelNPC = NPClevel(Level)
+            'Uses "Function NPClevel(ByVal assignedNPClevel As Double) As Double"
+            'Level Function() to determine the NPC's Level, Established using player level as base + Extra
+            HpNPC = HpNPCresult()
+            SpeedNPC = SpeedNPCresult()
+            'Need to make random monster function so temp as 'Zombie'
+        Else
+            Console.WriteLine("Enter valid Data")
+            Battleloop()
+        End If
+
+        Console.WriteLine("__________________________________________________________________")
+        Console.WriteLine("")
+        '======================================================
+        Console.Title() = (randommonster & "Lv: " & LevelNPC & " [HP: " & HpNPC & "  [" & NameofPlayer1 & " Hp: " & Hp & "]")
+
+        Console.WriteLine(" O      A " & randommonster & " has appeared!")
+        Console.ReadLine()
+        If SpeedNPC > Speed Then
+            'Opponent attacks first
+            Console.WriteLine("+   " & monsterstatement & ATKNPCresult() & " damage!")
+            Hp = Hp - ATKNPCresult()
+            Console.ReadLine()
+        End If
+        Do Until HpNPC < 1
+            Turncount = Turncount + 1
+            Debug.WriteLine("Turn " & Turncount)
+            Console.Title() = (randommonster & "Lv: " & LevelNPC & " [HP: " & HpNPC & "]   " & " Player:  [" & NameofPlayer1 & " Hp: " & Hp & "]")
+
+            'Your damage calculations
+            Console.WriteLine("+  You strike doing " & (ATK + (0.9 + Level)) & " damage!")
+            HpNPC = HpNPC - (ATK + (0.9 + Level))
+            Console.ReadLine()
+
+            Console.WriteLine("+   " & monsterstatement & ATKNPCresult() & " damage!")
+            Hp = Hp - ATKNPCresult()
+            Console.ReadLine()
+
+            If Hp < 0 Then
+                Console.WriteLine("You have lost!")
+                Gameover()
+            End If
+            Console.Beep()
+            Threading.Thread.Sleep(120)
+
+            'Win loop end
+            '============================
+        Loop
+        Console.WriteLine("You have won!")
+        Console.ReadLine()
+        Console.WriteLine("You leveled up!")
+        Level = Level + 1
+        Threading.Thread.Sleep(600)
+        Turncount = 0
+        StoryPlayer1()
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+    'Opening menus
+    '==========================================================================================
+
+    Public Sub P1()
+        'First player will involve an impartial AI
+        Classconfirmpath = 0
+        Console.WindowWidth = 150
+        Console.Title = "1 Player Game"
+        'This set function determines that the path taken is at default going from menu to menu
+        Console.Clear()
+        Console.WriteLine("=================================================================")
+        Console.WriteLine("You have selected 1 Player.")
+        Threading.Thread.Sleep(600)
+        Console.WriteLine()
+        Console.WriteLine("Let's see how far you can go!")
+            Threading.Thread.Sleep(600)
+        Console.WriteLine()
+        Console.WriteLine("You have to pick a name first")
+        NameofPlayer1 = Console.ReadLine()
+        Threading.Thread.Sleep(600)
+        Console.Clear()
+        Console.WriteLine("Well then " & NameofPlayer1 & ", Let us see what you can do!")
+        Console.WriteLine("=================================================================")
+        Threading.Thread.Sleep(600)
+        Console.WriteLine()
+        Threading.Thread.Sleep(600)
+        Console.WriteLine()
+        Threading.Thread.Sleep(600)
+        Console.WriteLine()
+        Threading.Thread.Sleep(600)
+        Console.WriteLine()
+        Threading.Thread.Sleep(600)
+        Console.WriteLine()
+        Console.Clear()
+        Console.Title() = "Choose a Class"
+        Player1Classselect()
+    End Sub
+
+    Public Sub Player1Classselect()
+        'Decides path to story 1
+        Pathbeginning = 1
+        Console.Clear()
+        Console.WriteLine("Which Class do you choose?")
+        Console.WriteLine("=====================")
+        Console.WriteLine(" 1 for SwordMaster")
+        Console.WriteLine(" 2 For Knight")
+        Console.WriteLine(" 3 for barbarian")
+        Console.WriteLine("=====================")
+        Classes = Console.ReadLine()
+        Select Case Classes
+            Case 1
+                Hp = 20
+                ATK = 6
+                Defense = 2
+                Speed = 3
+                Classname = "Swordmaster"
+                Level = 1
+                Opningstatement = "Endearing Swordmaster "
+            Case 2
+                Hp = 30
+                ATK = 4
+                Defense = 3
+                Speed = 2
+                Classname = "Knight"
+                Level = 1
+                Opningstatement = "Brave Knight "
+            Case 3
+                Hp = 40
+                ATK = 3
+                Defense = 4
+                Speed = 1
+                Classname = "Barbarian"
+                Level = 1
+                Opningstatement = "Surly Barbarian "
+        End Select
+        Classchoiceconfirm()
+    End Sub
+
+    Private Sub Classchoiceconfirm()
+        Console.Clear()
+        Dim choiceyesnoclass As String = Nothing
+        Console.WriteLine()
+        Console.WriteLine("                                        ]____________________")
+        Console.WriteLine("                                  <=====]" & Classname)
+        Console.WriteLine("                                        ]__________________/")
+        Console.WriteLine("You have chosen " & Classname & ".")
+        Console.WriteLine("This classes stats are as follows")
+        Console.WriteLine("Hp = " & Hp & " ATK = " & ATK & " Def = " & Defense & " Speed = " & Speed)
+        Console.WriteLine("Level = " & Level)
+        Console.WriteLine("========================================================================")
+        Threading.Thread.Sleep(1000)
+        Console.WriteLine("Do you wish to claim this class? (Y/N)")
+        choiceyesnoclass = Console.ReadLine()
+        If choiceyesnoclass = "Y" Then
+            classpath()
+        ElseIf choiceyesnoclass = "N" Then
+            Console.WriteLine()
+            Console.WriteLine("Then pick a class you like.")
+            Threading.Thread.Sleep(1900)
+            Player1Classselect()
+        Else
+            Console.WriteLine("Please write appropriate value")
+            Classchoiceconfirm()
+        End If
+    End Sub
+    Private Sub classpath()
+        'used later for story checkpoints and location checkpoints.
+        If Classconfirmpath = 0 Then
+            StoryPlayer1()
+        ElseIf Classconfirmpath > 0 Then
+        End If
+    End Sub
+
+
+    'Game truely starts here
+    '==================================================================================================
+    Public Sub StoryPlayer1()
+        'The main menu
+
+        Dim choice1 As String = Nothing
+        Dim choice2 As String = Nothing
+        Console.Clear()
+        Console.Title = (Classname & " " & NameofPlayer1)
+        Console.WriteLine("                              ]____________________")
+        Console.WriteLine("                        <=====]" & Classname & " LV:" & Level)
+        Console.WriteLine("                              ]__________________/")
+        Console.WriteLine(Opningstatement & " " & NameofPlayer1)
+        Select Case Pathbeginning
+            Case 0
+                Console.WriteLine("What do you wish to do?")
+                Console.WriteLine(" 1: Battle, 2: Check Status, 3: Look at equipment, 4 Enemy Index, 5 Options")
+                choice2 = Console.ReadLine()
+                Select Case choice2
+                    Case 1
+                        Hp = Hp + 20
+                        Console.WriteLine("To Battle!")
+                        Console.ReadLine()
+                        StorystartIntro()
+                    Case 2
+                        Console.WriteLine("You are healthy")
+                        Console.WriteLine(Hp & "/ A replacable number")
+                        Console.WriteLine("Level: " & Level)
+                        Console.WriteLine("Attack: " & ATK)
+                        Console.WriteLine("Defense: " & Defense)
+                        Console.ReadLine()
+                        Console.Clear()
+                        StoryPlayer1()
+                    Case 3
+                        Console.WriteLine("WIP")
+
+                        Console.ReadLine()
+                        Console.Clear()
+                        StoryPlayer1()
+                    Case 4
+                        Console.WriteLine("Enemy Index")
+                        Console.WriteLine("")
+                        Console.WriteLine("Zombies:")
+                        Console.WriteLine(" Uses Fists")
+                        Console.WriteLine("Skeletons:")
+                        Console.WriteLine(" Uses Bow and Arrow, Bone's too brittle for swords, low HP")
+                        Console.ReadLine()
+                        Console.Clear()
+                        StoryPlayer1()
+                    Case 5
+                        Console.WriteLine("Options")
+
+                End Select
+            Case 1
+                Pathbeginning = 0
+                Console.WriteLine("You shall embark on a great adventure!")
+                Threading.Thread.Sleep(1000)
+                Console.WriteLine("Watch the title it displays setting, class And level")
+                Console.WriteLine()
+                Console.WriteLine("Are you ready?     (Y/N)")
+                choice1 = Console.ReadLine()
+                If choice1.ToLower = "y" Then
+                    StorystartIntro()
+                Else
+                    Console.WriteLine("Hint: Hit Y")
+                    Threading.Thread.Sleep(1000)
+                    Console.Clear()
+                    StoryPlayer1()
+                End If
+        End Select
+    End Sub
+
+    Public Sub StorystartIntro()
+
+        Console.Clear()
+        Console.WriteLine()
+        setting = " -In a dense forest- "
+        Console.Title() = ("[" & setting & "]  (" & NameofPlayer1 & " as " & Classname & " at LV: " & Level & ")")
+        Console.WriteLine("-Press Enter-")
+        Console.ReadLine()
+        Console.WriteLine(NameofPlayer1 & ": | Where am I? |")
+        Console.WriteLine()
+        Console.ReadLine()
+        Battleloop()
+
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Public Sub Gameover()
+        Console.WriteLine(" Gameover ")
+
+        Threading.Thread.Sleep(2000000)
+    End Sub
+End Module
+
+    '====================================================================================
+    Public Sub P2()
+        'WIP
+    End Sub
+    
+End Module
